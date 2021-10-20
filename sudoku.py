@@ -82,30 +82,42 @@ return (True, domains) if you want.
 def ac3(domains):
     #we need to find all arcs in csp
     queue = []
+    for i in range(9):
+        for j in range(9):
+            neighbors = get_neighbors((i , j))
+            for n in neighbors:
+                queue.append(((i, j), (n)))
     while len(queue) > 0:
         #pop top element from the queue
         xi, xj = queue[0]
         queue = queue[1:]
-        if revise(csp, xi, xj) is True:
-            if len(domains[xi]) == 0:
+        isRevised, new_domain  = revise(domains, xi, xj)
+        if isRevised is True:
+            domains[xi[0]][xi[1]] = new_domain
+            if len(domains[xi[0]][xi[1]]) == 0:
                 return False, None
             else:
                 neighbor_list = get_neighbors(xi)
                 #loop through all non-xj neighbors
                 for xk in neighbor_list:
                     if xk != xj:
-                        queue.append(xk, xi)
+                        queue.append((xk, xi))
     return True, domains
 
 
 def revise(csp, xi, xj):
     revise = False
-    for x in domains[xi]:
-        #if no thing works
-        if True:
-            domains[xi].pop(x)
+    di = csp[xi[0]][xi[1]]
+    for x in di.copy():
+        diff_val = False
+        for y in csp[xj[0]][xj[1]]:
+            if x != y:
+                diff_val = True
+                break
+        if diff_val == False:
+            di.remove(x)
             revise = True
-    return revise
+    return revise, di
 
 
 '''
